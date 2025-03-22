@@ -93,8 +93,8 @@ get_mode <- function(x) {
 #' Created by Virgilio Gómez-Rubio, https://becarioprecario.bitbucket.io/inla-gitbook/ch-mixture.html
 #' 
 #' @param y numeric, dependent variable to predict
-#' @grp numeric, estimated subpopulation/subgroup number
-#' @prior_means numeric, internally defined prior means of each subgroup
+#' @param grp numeric, estimated subpopulation/subgroup number
+#' @param prior_means numeric, internally defined prior means of each subgroup
 #' @return data frame 
 #' @export
 fit_inla_internal <- function(y, grp, prior_means) {
@@ -160,7 +160,7 @@ rq_Z <- function(z) {
 #' 
 #' @param z.old initial vector containing subpopulation/subgroup membership (z)
 #' @param z.new transitioned vector of subpopulation/subgroup membership (by inla)
-#' @log TRUE triggers INLA to conduct logging
+#' @param log TRUE triggers INLA to conduct logging
 #' @return vector 
 #' @export
 dq_Z <- function(z.old, z.new, log = TRUE) {
