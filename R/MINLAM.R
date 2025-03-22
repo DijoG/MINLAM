@@ -1,4 +1,5 @@
 #' Check packages
+#' 
 #' @return installs missing packages
 #' @export
 check_PACKS <- function() {
@@ -274,7 +275,7 @@ inla_MH <- function(d, fit.inla, b.init, rq, dq, prior, n.sim = 200, n.burnin = 
 #' @return data frame 
 #' @export
 get_Z <- function(inla_MH_object) {
-  zz_ = map(inla_MH_object$b.sim, ~ .x$z) %>% 
+  zz_ = purrr::map(inla_MH_object$b.sim, ~ .x$z) %>% 
     reduce(rbind)  
   zz_probs = apply(zz_, 2, get_probs) 
   return(zz_probs)
@@ -296,10 +297,10 @@ get_weighted_probs <- function(get_z_object, y, grp, main_class, df_prob = FALSE
                as.data.frame(t(get_z_object)) %>%
                  set_names(stringr::str_c("Group_", 1:length(unique(grp))))) %>%
     dplyr::mutate(Assigned_Group = max.col(across(starts_with("Group_")), ties.method = "first"),
-                  Min_Assigned = map_dbl(Assigned_Group, ~ min(y[grp == .])),
-                  Max_Assigned = map_dbl(Assigned_Group, ~ max(y[grp == .])),
-                  Mean_Assigned = map_dbl(Assigned_Group, ~ mean(y[grp == .])),
-                  Mode_Assigned = map_dbl(Assigned_Group, ~ get_mode(y[grp == .])))
+                  Min_Assigned = purrr::map_dbl(Assigned_Group, ~ min(y[grp == .])),
+                  Max_Assigned = purrr::map_dbl(Assigned_Group, ~ max(y[grp == .])),
+                  Mean_Assigned = purrr::map_dbl(Assigned_Group, ~ mean(y[grp == .])),
+                  Mode_Assigned = purrr::map_dbl(Assigned_Group, ~ get_mode(y[grp == .])))
   
   wdf_probs =
     df_probs %>%
@@ -369,9 +370,9 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     # Group nearby modes
     formonearby = 
       formodf %>%
-      select(Group, Est_Mode) %>%
-      inner_join(select(formodf, Group2 = Group, Est_Mode2 = Est_Mode), by = character()) %>%
-      filter(Group != Group2, abs(Est_Mode - Est_Mode2) <= within)
+      dplyr::select(Group, Est_Mode) %>%
+      dplyr::inner_join(dplyr::select(formodf, Group2 = Group, Est_Mode2 = Est_Mode), by = character()) %>%
+      dplyr::filter(Group != Group2, abs(Est_Mode - Est_Mode2) <= within)
     if (nrow(formonearby) > 0) {
       formodf = group_MODES(formodf, within)
       n_grp = nrow(formodf)
@@ -460,10 +461,10 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     if (!is.null(out_dir)) {
       csvname = stringr::str_replace_all(mclass[i], "[^a-zA-Z0-9_-]", "_")
       if (df_prob) {
-        write_csv2(OUT[[i]]$df, stringr::str_c(out_dir, "/df_", csvname, ".csv"))
-        write_csv2(OUT[[i]]$wdf, stringr::str_c(out_dir, "/wdf_", csvname, ".csv"))
+        readr::write_csv2(OUT[[i]]$df, stringr::str_c(out_dir, "/df_", csvname, ".csv"))
+        readr::write_csv2(OUT[[i]]$wdf, stringr::str_c(out_dir, "/wdf_", csvname, ".csv"))
       } else {
-        write_csv2(OUT[[i]], stringr::str_c(out_dir, "/wdf_", csvname, ".csv"))
+        readr::write_csv2(OUT[[i]], stringr::str_c(out_dir, "/wdf_", csvname, ".csv"))
       }
     } else {
       next
@@ -473,12 +474,12 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
   
   if (is.null(out_dir)) {
     if (df_prob) {
-      df_probs = bind_rows(lapply(OUT, `[[`, "df"))
-      wdf_probs = bind_rows(lapply(OUT, `[[`, "wdf"))
+      df_probs = dplyr::bind_rows(lapply(OUT, `[[`, "df"))
+      wdf_probs = dplyr::bind_rows(lapply(OUT, `[[`, "wdf"))
       return(list(df = df_probs,
                   wdf = wdf_probs))
     } else {
-      return(bind_rows(OUT))
+      return(dplyr::bind_rows(OUT))
     }
   }
 }
@@ -501,21 +502,21 @@ fuss_PARALLEL <- function(data, varCLASS, varY, method = "dpi", within = 0.03, m
   future::plan(multisession, workers = n_workers)
   
   result_list =
-    future_map(data, ~ get_PROBCLASS_MH(.x, varCLASS, 
-                                        varY, 
-                                        method,
-                                        within, 
-                                        maxNGROUP,
-                                        df_prob,
-                                        out_dir))
+    furrr::future_map(data, ~ get_PROBCLASS_MH(.x, varCLASS, 
+                                               varY, 
+                                               method,
+                                               within, 
+                                               maxNGROUP,
+                                               df_prob,
+                                               out_dir))
   if (is.null(out_dir)) {
     if (df_prob) {
-      df = map_dfr(result_list, "df")
-      wdf = map_dfr(result_list, "wdf")
+      df = purrr::map_dfr(result_list, "df")
+      wdf = purrr::map_dfr(result_list, "wdf")
       return(list(df = df,
                   wdf = wdf))
     } else {
-      return(bind_rows(result_list))
+      return(dplyr::bind_rows(result_list))
     }
   }
 }
