@@ -355,13 +355,18 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
   OUT = list()
   for (i in seq_along(mclass)) {
     
-    # Data preparation
-    y = data[data[[varCLASS]] == mclass[i], varY]
+    # Data preparation y = data[data[[varCLASS]] == mclass[i], varY]
+    y = data %>%
+      dplyr::filter(.data[[varCLASS]] == mclass[i]) %>%
+      dplyr::pull(.data[[varY]])
     df_grp = get_NGRP(y)
     
     ##> Number of groups (subgroups/-populations in a multimodal distribution)
-    # Initial groups
-    n_grp <- df_grp[df_grp$Method == method, "n_grp"]
+    # Initial groups n_grp <- df_grp[df_grp$Method == method, "n_grp"]
+    n_grp = 
+      df_grp %>%
+      dplyr::filter(Method == method) %>%
+      dplyr::pull(n_grp)
     
     if (n_grp > maxNGROUP) {n_grp = maxNGROUP}
     
