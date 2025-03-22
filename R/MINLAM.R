@@ -501,7 +501,8 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
 #' @export
 fuss_PARALLEL <- function(data, varCLASS, varY, method = "dpi", within = 0.03, maxNGROUP = 5, df_prob = FALSE, out_dir = NULL, n_workers = 4) {
   
-  plan(multisession, workers = n_workers)
+  future::plan(multisession, workers = n_workers)
+  future::set.seed(123)
   
   result_list =
     future_map(data, ~ get_PROBCLASS_MH(.x, varCLASS, 
