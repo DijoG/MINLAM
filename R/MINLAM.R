@@ -88,7 +88,7 @@ get_mode <- function(x) {
   }
 }
 
-# Fit an INLA model given response variable y and group assignments
+#' Fit an INLA model given response variable y and group assignments
 #' Created by Virgilio Gómez-Rubio, https://becarioprecario.bitbucket.io/inla-gitbook/ch-mixture.html
 #' 
 #' @param y numeric, dependent variable to predict
@@ -501,7 +501,6 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
 fuss_PARALLEL <- function(data, varCLASS, varY, method = "dpi", within = 0.03, maxNGROUP = 5, df_prob = FALSE, out_dir = NULL, n_workers = 4) {
   
   future::plan(multisession, workers = n_workers)
-  future::set.seed(123)
   
   result_list =
     future_map(data, ~ get_PROBCLASS_MH(.x, varCLASS, 

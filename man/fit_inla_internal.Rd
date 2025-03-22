@@ -2,7 +2,8 @@
 % Please edit documentation in R/MINLAM.R
 \name{fit_inla_internal}
 \alias{fit_inla_internal}
-\title{Created by Virgilio Gómez-Rubio, https://becarioprecario.bitbucket.io/inla-gitbook/ch-mixture.html}
+\title{Fit an INLA model given response variable y and group assignments
+Created by Virgilio Gómez-Rubio, https://becarioprecario.bitbucket.io/inla-gitbook/ch-mixture.html}
 \usage{
 fit_inla_internal(y, grp, prior_means)
 }
@@ -17,5 +18,6 @@ fit_inla_internal(y, grp, prior_means)
 data frame
 }
 \description{
+Fit an INLA model given response variable y and group assignments
 Created by Virgilio Gómez-Rubio, https://becarioprecario.bitbucket.io/inla-gitbook/ch-mixture.html
 }
