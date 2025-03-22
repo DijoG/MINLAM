@@ -1,0 +1,11 @@
+Package: MINLAM
+Type: Package
+Title: Multimodal data analysis with INLA 
+Version: 0.1.0
+Author: Gergo Dioszegi
+Maintainer: The package maintainer <dijogergo@gmail.com>
+Description: Subpopulation probabilty estimation of multimodally distributed data
+License: MTI
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.3
