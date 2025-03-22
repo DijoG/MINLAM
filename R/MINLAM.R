@@ -442,11 +442,11 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     grp_init = list(z = grp, m = fit_inla_internal(y, grp, prior_means))
     
     ##> Some crazy stuff ->
-    #assign("y", y, envir = .GlobalEnv)
-    #assign("n_grp", n_grp, envir = .GlobalEnv)
-    #assign("prior_means", prior_means, envir = .GlobalEnv)
-    #assign("scale_sigma", scale_sigma, envir = .GlobalEnv)
-    #Sys.sleep(1)
+    assign("y", y, envir = .GlobalEnv)
+    assign("n_grp", n_grp, envir = .GlobalEnv)
+    assign("prior_means", prior_means, envir = .GlobalEnv)
+    assign("scale_sigma", scale_sigma, envir = .GlobalEnv)
+    Sys.sleep(1)
     
     ##> Metropolis-Hastings sampling
     cat("Processing", mclass[i], "class ----->\n")
