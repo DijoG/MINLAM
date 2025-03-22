@@ -297,7 +297,7 @@ get_weighted_probs <- function(get_z_object, y, grp, main_class, df_prob = FALSE
                Group = grp, 
                as.data.frame(t(get_z_object)) %>%
                  set_names(stringr::str_c("Group_", 1:length(unique(grp))))) %>%
-    dplyr::mutate(Assigned_Group = max.col(across(starts_with("Group_")), ties.method = "first"),
+    dplyr::mutate(Assigned_Group = max.col(dplyr::across(tidyselect::starts_with("Group_")), ties.method = "first"),
                   Min_Assigned = purrr::map_dbl(Assigned_Group, ~ min(y[grp == .])),
                   Max_Assigned = purrr::map_dbl(Assigned_Group, ~ max(y[grp == .])),
                   Mean_Assigned = purrr::map_dbl(Assigned_Group, ~ mean(y[grp == .])),
@@ -355,18 +355,20 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
   OUT = list()
   for (i in seq_along(mclass)) {
     
-    # Data preparation y = data[data[[varCLASS]] == mclass[i], varY]
-    y = data %>%
-      dplyr::filter(.data[[varCLASS]] == mclass[i]) %>%
-      dplyr::pull(.data[[varY]])
-    df_grp = get_NGRP(y)
+    # Data preparation 
+    y = data[data[[varCLASS]] == mclass[i], varY]
+    #y = data %>%
+    #  dplyr::filter(.data[[varCLASS]] == mclass[i]) %>%
+    #  dplyr::pull(.data[[varY]])
+    #df_grp = get_NGRP(y)
     
     ##> Number of groups (subgroups/-populations in a multimodal distribution)
-    # Initial groups n_grp <- df_grp[df_grp$Method == method, "n_grp"]
-    n_grp = 
-      df_grp %>%
-      dplyr::filter(Method == method) %>%
-      dplyr::pull(n_grp)
+    # Initial groups 
+    n_grp <- df_grp[df_grp$Method == method, "n_grp"]
+    #n_grp = 
+    #  df_grp %>%
+    #  dplyr::filter(Method == method) %>%
+    #  dplyr::pull(n_grp)
     
     if (n_grp > maxNGROUP) {n_grp = maxNGROUP}
     
