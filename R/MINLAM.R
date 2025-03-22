@@ -23,7 +23,7 @@ check_PACKS <- function() {
 #' @export
 get_MODES <- function(res_modeforest, nmod) {
   summary_text = capture.output(summary(res_modeforest))
-  mode_values = str_extract_all(summary_text, "\\d+\\.\\d+")
+  mode_values = stringr::str_extract_all(summary_text, "\\d+\\.\\d+")
   
   mode_df = matrix(as.numeric(unlist(mode_values)), 
                    ncol = 4, 
@@ -296,7 +296,7 @@ get_weighted_probs <- function(get_z_object, y, grp, main_class, df_prob = FALSE
     data.frame(y = y,
                Group = grp, 
                as.data.frame(t(get_z_object)) %>%
-                 set_names(str_c("Group_", 1:length(unique(grp))))) %>%
+                 set_names(stringr::str_c("Group_", 1:length(unique(grp))))) %>%
     mutate(Assigned_Group = max.col(across(starts_with("Group_")), ties.method = "first"),
            Min_Assigned = map_dbl(Assigned_Group, ~ min(y[grp == .])),
            Max_Assigned = map_dbl(Assigned_Group, ~ max(y[grp == .])),
@@ -438,7 +438,7 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
       }
     }
     
-    prior_means = setNames(as.list(formodf$Est_Mode), str_c("x", seq_len(nrow(formodf))))
+    prior_means = setNames(as.list(formodf$Est_Mode), stringr::str_c("x", seq_len(nrow(formodf))))
     grp_init = list(z = grp, m = fit_inla_internal(y, grp, prior_means))
     
     ##> Some crazy stuff ->
@@ -460,12 +460,12 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     OUT[[i]] = get_weighted_probs(Z, y, grp, main_class = mclass[i], df_prob)
     
     if (!is.null(out_dir)) {
-      csvname = str_replace_all(mclass[i], "[^a-zA-Z0-9_-]", "_")
+      csvname = stringr::str_replace_all(mclass[i], "[^a-zA-Z0-9_-]", "_")
       if (df_prob) {
-        write_csv2(OUT[[i]]$df, str_c(out_dir, "/df_", csvname, ".csv"))
-        write_csv2(OUT[[i]]$wdf, str_c(out_dir, "/wdf_", csvname, ".csv"))
+        write_csv2(OUT[[i]]$df, stringr::str_c(out_dir, "/df_", csvname, ".csv"))
+        write_csv2(OUT[[i]]$wdf, stringr::str_c(out_dir, "/wdf_", csvname, ".csv"))
       } else {
-        write_csv2(OUT[[i]], str_c(out_dir, "/wdf_", csvname, ".csv"))
+        write_csv2(OUT[[i]], stringr::str_c(out_dir, "/wdf_", csvname, ".csv"))
       }
     } else {
       next
