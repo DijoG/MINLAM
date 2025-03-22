@@ -11,6 +11,8 @@ dq_Z(z.old, z.new, log = TRUE)
 \item{z.old}{initial vector containing subpopulation/subgroup membership (z)}
 
 \item{z.new}{transitioned vector of subpopulation/subgroup membership (by inla)}
+
+\item{log}{TRUE triggers INLA to conduct logging}
 }
 \value{
 vector

@@ -8,6 +8,10 @@ fit_inla_internal(y, grp, prior_means)
 }
 \arguments{
 \item{y}{numeric, dependent variable to predict}
+
+\item{grp}{numeric, estimated subpopulation/subgroup number}
+
+\item{prior_means}{numeric, internally defined prior means of each subgroup}
 }
 \value{
 data frame
