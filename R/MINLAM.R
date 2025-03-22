@@ -306,7 +306,7 @@ get_weighted_probs <- function(get_z_object, y, grp, main_class, df_prob = FALSE
   wdf_probs =
     df_probs %>%
     dplyr::group_by(Assigned_Group) %>%
-    dplyr::summarise(N = n(),
+    dplyr::summarise(N = dplyr::n(),
                      Mean = mean(Mean_Assigned),
                      Mode = mean(Mode_Assigned)) %>%
     dplyr::mutate(Weight_ratio = N / sum(N),
