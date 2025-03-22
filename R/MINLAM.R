@@ -110,9 +110,9 @@ fit_inla_internal <- function(y, grp, prior_means) {
   
   d = list(y = yy, x = x)
   
-  mod = inla(y ~ -1 + x, data = d,
-             family = rep("gaussian", n_grp),
-             control.fixed = list(mean = prior_means, prec = 1))
+  mod = INLA::inla(y ~ -1 + x, data = d,
+                   family = rep("gaussian", n_grp),
+                   control.fixed = list(mean = prior_means, prec = 1))
   
   return(list(model = mod, mlik = mod$mlik[1, 1]))
 }
