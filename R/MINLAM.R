@@ -1,5 +1,3 @@
-
-
 #' Check packages
 #' @return installs missing packages
 #' @export
