@@ -30,12 +30,12 @@ get_MODES <- function(res_modeforest, nmod) {
                    byrow = TRUE, 
                    dimnames = list(NULL, c("Lower_Mode", "Upper_Mode", "BW1", "BW2"))) %>%
     as.data.frame() %>%
-    mutate(Est_Mode = (Upper_Mode + Lower_Mode) / 2) %>%
-    slice(1:nmod) %>%
-    arrange(Est_Mode)
+    dplyr::mutate(Est_Mode = (Upper_Mode + Lower_Mode) / 2) %>%
+    dplyr::slice(1:nmod) %>%
+    dplyr::arrange(Est_Mode)
   
   return(mode_df %>%
-           mutate(Group = 1:nrow(.)))
+           dplyr::mutate(Group = 1:nrow(.)))
 }
 
 #' Group/merge modes if they are within a given range
@@ -46,12 +46,12 @@ get_MODES <- function(res_modeforest, nmod) {
 #' @export
 group_MODES <- function(df, within = 0.03) {
   df = df %>%
-    arrange(Est_Mode) %>%
-    mutate(Group = cumsum(c(1, diff(Est_Mode) > within)))
+    dplyr::arrange(Est_Mode) %>%
+    dplyr::mutate(Group = cumsum(c(1, diff(Est_Mode) > within)))
   
   df %>%
-    group_by(Group) %>%
-    summarise(Est_Mode = mean(Est_Mode), .groups = "drop")
+    dplyr::group_by(Group) %>%
+    dplyr::summarise(Est_Mode = mean(Est_Mode), .groups = "drop")
 }
 
 #' Obtain the number of groups based on bandwidth selection
@@ -297,26 +297,26 @@ get_weighted_probs <- function(get_z_object, y, grp, main_class, df_prob = FALSE
                Group = grp, 
                as.data.frame(t(get_z_object)) %>%
                  set_names(stringr::str_c("Group_", 1:length(unique(grp))))) %>%
-    mutate(Assigned_Group = max.col(across(starts_with("Group_")), ties.method = "first"),
-           Min_Assigned = map_dbl(Assigned_Group, ~ min(y[grp == .])),
-           Max_Assigned = map_dbl(Assigned_Group, ~ max(y[grp == .])),
-           Mean_Assigned = map_dbl(Assigned_Group, ~ mean(y[grp == .])),
-           Mode_Assigned = map_dbl(Assigned_Group, ~ get_mode(y[grp == .])))
+    dplyr::mutate(Assigned_Group = max.col(across(starts_with("Group_")), ties.method = "first"),
+                  Min_Assigned = map_dbl(Assigned_Group, ~ min(y[grp == .])),
+                  Max_Assigned = map_dbl(Assigned_Group, ~ max(y[grp == .])),
+                  Mean_Assigned = map_dbl(Assigned_Group, ~ mean(y[grp == .])),
+                  Mode_Assigned = map_dbl(Assigned_Group, ~ get_mode(y[grp == .])))
   
   wdf_probs =
     df_probs %>%
-    group_by(Assigned_Group) %>%
-    summarise(N = n(),
-              Mean = mean(Mean_Assigned),
-              Mode = mean(Mode_Assigned)) %>%
-    mutate(Weight_ratio = N / sum(N),
-           Main_Class = main_class) %>%
+    dplyr::group_by(Assigned_Group) %>%
+    dplyr::summarise(N = n(),
+                     Mean = mean(Mean_Assigned),
+                     Mode = mean(Mode_Assigned)) %>%
+    dplyr::mutate(Weight_ratio = N / sum(N),
+                  Main_Class = main_class) %>%
     as.data.frame()
   
   if (df_prob) {
     df_probs = 
       df_probs %>%
-      mutate(Main_Class = main_class)
+      dplyr::mutate(Main_Class = main_class)
     return(list(df = df_probs,
                 wdf = wdf_probs))
   } else {
@@ -415,7 +415,7 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
           } else {
             n_grp = length(unique(grp))
             formodf = get_MODES(multimode::modeforest(y, display = F), n_grp) %>%
-              arrange(Est_Mode)
+              dplyr::arrange(Est_Mode)
             breaks = sort((formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2)
             grp = as.numeric(cut(y, n_grp), breaks)
           }
