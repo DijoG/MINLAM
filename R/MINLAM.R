@@ -356,19 +356,10 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
   OUT = list()
   for (i in seq_along(mclass)) {
     
-    #y = OSAV %>%
-    #  filter(sav_Forest == "b_17::15_G") %>%
-    #  pull(val)
-    #plot(density(y))
-    
-    #y = OSAV %>%
-    #filter(sav_Forest == "b_17::12_M") %>% # "b_9::6_M", "b_13::7_M", "b_13::9_M" ,"b_17::12_M"
-    #pull(val)
-    
     # Data preparation
     y = data %>%
       filter(.data[[varCLASS]] == mclass[i]) %>%
-      pull(.data[[varY]])
+      dplyr::pull(.data[[varY]])
     df_grp = get_NGRP(y)
     
     ##> Number of groups (subgroups/-populations in a multimodal distribution)
@@ -376,7 +367,7 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     n_grp = 
       df_grp %>%
       filter(Method == method) %>%
-      pull(n_grp)
+      dplyr::pull(n_grp)
     
     if (n_grp > maxNGROUP) {n_grp = maxNGROUP}
     
