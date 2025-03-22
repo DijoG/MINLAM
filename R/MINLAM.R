@@ -360,7 +360,7 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     #y = data %>%
     #  dplyr::filter(.data[[varCLASS]] == mclass[i]) %>%
     #  dplyr::pull(.data[[varY]])
-    #df_grp = get_NGRP(y)
+    df_grp = get_NGRP(y)
     
     ##> Number of groups (subgroups/-populations in a multimodal distribution)
     # Initial groups 
