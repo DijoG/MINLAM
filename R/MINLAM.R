@@ -17,25 +17,16 @@ check_PACKS <- function() {
 
 #' Extract mode statistics from a mode forest
 #'
-#' @param res_modeforest multimode::modeforest() result
+#' @param y vector, input data of a distribution
 #' @param nmod numeric, number of subpopulations/subgroups  
 #' @return data frame 
 #' @export
-get_MODES <- function(res_modeforest, nmod) {
-  summary_text = capture.output(summary(res_modeforest))
-  mode_values = stringr::str_extract_all(summary_text, "\\d+\\.\\d+")
-  
-  mode_df = matrix(as.numeric(unlist(mode_values)), 
-                   ncol = 4, 
-                   byrow = TRUE, 
-                   dimnames = list(NULL, c("Lower_Mode", "Upper_Mode", "BW1", "BW2"))) %>%
-    as.data.frame() %>%
-    dplyr::mutate(Est_Mode = (Upper_Mode + Lower_Mode) / 2) %>%
-    dplyr::slice(1:nmod) %>%
-    dplyr::arrange(Est_Mode)
-  
-  return(mode_df %>%
-           dplyr::mutate(Group = 1:nrow(.)))
+get_MODES <- function(y, nmod) {
+  mm = multimode::locmodes(y, mod0 = nmod)
+  modes = mm$locations[seq(1, length(mm$locations), by = 2)]
+  mode_df = data.frame(Est_Mode = modes,
+                       Group = 1:length(modes))
+  return(mode_df)
 }
 
 #' Group/merge modes if they are within a given range
@@ -56,7 +47,7 @@ group_MODES <- function(df, within = 0.03) {
 
 #' Obtain the number of groups based on bandwidth selection
 #'
-#' @param y vector, input samples of a distribution
+#' @param y vector, input data of a distribution
 #' @return data frame 
 #' @export
 get_NGRP <- function(y) {
@@ -334,7 +325,7 @@ get_weighted_probs <- function(get_z_object, y, grp, main_class, df_prob = FALSE
 #' @param varCLASS character, variable/column (categorical, character or numeric) name containing the subpopulations/subgroups
 #' @param varY character, variable/column (numeric) containing the values assigned to the population/subpopulations
 #' @param method character, which density estimator to apply: "nrd", "bcv", "dpi", by default "dpi", see above
-#' @param within numeric, range as in get_MODES()
+#' @param within numeric, range as in group_MODES()
 #' @param maxNGROUP numeric, after data inspection -> assumed maximum number of subpopulations/subgroups
 #' @param df_prob logical, as in get_weighted_probs()
 #' @param out_dir by default NULL, if character, path of the output directory to write csv tables 
@@ -373,7 +364,7 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     if (n_grp > maxNGROUP) {n_grp = maxNGROUP}
     
     # modeforest by Minotte et al. (1998)
-    formodf = get_MODES(multimode::modeforest(y, display = F), n_grp) 
+    formodf = get_MODES(y, n_grp) 
     
     # Group nearby modes
     formonearby = 
@@ -421,7 +412,7 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
             n_grp = length(unique(grp))
           } else {
             n_grp = length(unique(grp))
-            formodf = get_MODES(multimode::modeforest(y, display = F), n_grp) %>%
+            formodf = get_MODES(y, n_grp) %>%
               dplyr::arrange(Est_Mode)
             breaks = sort((formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2)
             grp = as.numeric(cut(y, n_grp), breaks)
@@ -498,7 +489,7 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
 #' @param varCLASS character, variable/column (categorical, character or numeric) name containing the subpopulations/subgroups
 #' @param varY character, variable/column (numeric) containing the values assigned to the population/subpopulations
 #' @param method character, which density estimator to apply: "nrd", "bcv", "dpi", by default "dpi", see above
-#' @param within numeric, range as in get_MODES()
+#' @param within numeric, range as in group_MODES()
 #' @param maxNGROUP numeric, after data inspection -> assumed maximum number of subpopulations/subgroups
 #' @param df_prob logical, as in get_weighted_probs()
 #' @param out_dir by default NULL, if character, path of the output directory to write csv tables 

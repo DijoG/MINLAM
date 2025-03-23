@@ -25,7 +25,7 @@ fuss_PARALLEL(
 
 \item{method}{character, which density estimator to apply: "nrd", "bcv", "dpi", by default "dpi", see above}
 
-\item{within}{numeric, range as in get_MODES()}
+\item{within}{numeric, range as in group_MODES()}
 
 \item{maxNGROUP}{numeric, after data inspection -> assumed maximum number of subpopulations/subgroups}
 

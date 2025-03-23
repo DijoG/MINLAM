@@ -7,7 +7,7 @@
 get_NGRP(y)
 }
 \arguments{
-\item{y}{vector, input samples of a distribution}
+\item{y}{vector, input data of a distribution}
 }
 \value{
 data frame

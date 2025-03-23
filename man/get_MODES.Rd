@@ -4,10 +4,10 @@
 \alias{get_MODES}
 \title{Extract mode statistics from a mode forest}
 \usage{
-get_MODES(res_modeforest, nmod)
+get_MODES(y, nmod)
 }
 \arguments{
-\item{res_modeforest}{multimode::modeforest() result}
+\item{y}{vector, input data of a distribution}
 
 \item{nmod}{numeric, number of subpopulations/subgroups}
 }
