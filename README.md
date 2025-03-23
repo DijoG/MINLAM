@@ -83,4 +83,37 @@ ggplot(df, aes(x = Value, fill = Subpopulation)) +
 
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_02.png">
 
+```r
+# Check available cores and wrangle data accordingly
+parallelly::availableCores() 
 
+cores <- parallelly::availableCores() - 3   # cores = 3
+
+num_classes <- length(unique(df$Category))
+num_groups <- ceiling(num_classes / cores)
+
+df <- 
+  df %>%
+  mutate(GROUP = as.numeric(factor(Category, levels = unique(Category))) %% num_groups + 1)
+
+df_GROUPS <- 
+  df %>%
+  group_split(GROUP)
+
+# Run fuss_PARALLEL()
+dir.create(".../test")
+
+require(furrr)
+
+tictoc::tic()
+MINLAM::fuss_PARALLEL(data = df_GROUPS,
+                      varCLASS = "Category", 
+                      varY = "Value", 
+                      method = "dpi", 
+                      within = .5, 
+                      maxNGROUP = 5, 
+                      df_prob = FALSE, 
+                      out_dir = ".../test", 
+                      n_workers = cores)
+tictoc::toc()
+```
