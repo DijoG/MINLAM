@@ -361,9 +361,11 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
       dplyr::filter(Method == method) %>%
       dplyr::pull(n_grp)
     
+    if (n_grp < 3) {n_grp = 3}
+    
     if (n_grp > maxNGROUP) {n_grp = maxNGROUP}
     
-    # modeforest by Minotte et al. (1998)
+    # multimode::locmodes()
     formodf = get_MODES(y, n_grp) 
     
     # Group nearby modes
