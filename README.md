@@ -160,14 +160,22 @@ Validation by matching assigned (predicted) group labels to original subgroup la
 # Read data csv files (there are 3 subgroups predicted in all 9 categories)
 FIL <- list.files(".../test_wi05", pattern = "^df_", full.names = TRUE) 
 
+# Predicted subgroups
 V <- 
   map_dfr(FIL, ~ read_csv2(.x, show_col_types = FALSE) %>%
     as.data.frame() %>%
-    mutate(Main_Class = factor(as.character(Main_Class))))
+    mutate(Main_Class = factor(as.character(Main_Class)))) %>%
+    arrange(y)
 V$Main_Class <- fct_recode(V$Main_Class, "F" = "FALSE")
 
+# Observed subgroups
+df <-
+  df %>%
+  arrange(Value)
+df$Subpopulation <- as.numeric(str_remove(df$Subpopulation, "Group "))
+
 # Compute MATCHING percentages (each subgroup has 75 records)
-matching_indices <- which(V$Group == V$Assigned_Group)
+matching_indices <- which(df$Subpopulation == V$Assigned_Group)
 main_class_percent <- table(V$Main_Class[matching_indices]) / 75 * 100
 
 # Put percentages into a data frame
