@@ -99,7 +99,7 @@ df_GROUPS <-
   df %>%
   group_split(GROUP)
 
-# Run fuss_PARALLEL() with parameter 'within' = 1
+# Run fuss_PARALLEL() with parameters: 'within' = 1 and 'df_prob' = FALSE
 dir.create(".../test_wi1")
 
 require(furrr)
@@ -126,7 +126,7 @@ A weighted, for example *wdf_F.csv* csv file has the following information.
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_04.png">
 
 ```r
-# Run fuss_PARALLEL() with parameter 'within' = 0.5
+# Run fuss_PARALLEL() with parameters: 'within' = 0.5 and 'df_prob' = TRUE
 dir.create(".../test_wi05")
 
 tictoc::tic()
@@ -136,7 +136,7 @@ MINLAM::fuss_PARALLEL(data = df_GROUPS,
                       method = "dpi", 
                       within = 0.5, 
                       maxNGROUP = 5, 
-                      df_prob = FALSE, 
+                      df_prob = TRUE, 
                       out_dir = ".../test_wi05", 
                       n_workers = cores)
 tictoc::toc()
