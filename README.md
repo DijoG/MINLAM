@@ -63,7 +63,6 @@ ggplot(df, aes(x = Value)) +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         plot.title = element_text(hjust = .5))
 ```
-
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_01.png">
 
 ```r
@@ -80,7 +79,6 @@ ggplot(df, aes(x = Value, fill = Subpopulation)) +
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
         plot.title = element_text(hjust = .5))
 ```
-
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_02.png">
 
 ```r
@@ -100,8 +98,8 @@ df_GROUPS <-
   df %>%
   group_split(GROUP)
 
-# Run fuss_PARALLEL()
-dir.create(".../test")
+# Run fuss_PARALLEL() with parameter 'within' = 1
+dir.create(".../test_wi1")
 
 require(furrr)
 
@@ -110,10 +108,43 @@ MINLAM::fuss_PARALLEL(data = df_GROUPS,
                       varCLASS = "Category", 
                       varY = "Value", 
                       method = "dpi", 
-                      within = .5, 
+                      within = 1, 
                       maxNGROUP = 5, 
                       df_prob = FALSE, 
-                      out_dir = ".../test", 
+                      out_dir = ".../test_wi1", 
                       n_workers = cores)
 tictoc::toc()
 ```
+57 minutes processing time using 3 cores.
+The *test_wi1* output directory contains the *weighted* csv files.
+
+<img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_03.png">
+
+A weighted, for example *wdf_F.csv* csv file has the following information.
+
+<img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_04.png">
+
+```r
+# Run fuss_PARALLEL() with parameter 'within' = 0.5
+dir.create(".../test_wi05")
+
+tictoc::tic()
+MINLAM::fuss_PARALLEL(data = df_GROUPS,
+                      varCLASS = "Category", 
+                      varY = "Value", 
+                      method = "dpi", 
+                      within = 0.5, 
+                      maxNGROUP = 5, 
+                      df_prob = FALSE, 
+                      out_dir = ".../test_wi05", 
+                      n_workers = cores)
+tictoc::toc()
+```
+59 minutes processing time using 3 cores.
+The *test_wi05* output directory contains the *weighted* as well as the *data* csv files.
+
+<img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_05.png">
+
+A data, for example *df_F.csv* csv file has the following information.
+
+<img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_06.png">
