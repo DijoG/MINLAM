@@ -57,6 +57,8 @@ ggplot(df, aes(x = Value)) +
   theme_dark() +
   labs(title = "Multimodal Data ~ Density", 
        x = "Value", y = "Density") +
+  scale_y_continuous(expand = expansion(mult = c(0, 0))) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0))) +
   theme(legend.position = "top",
         axis.text.y = element_blank(),
         axis.ticks = element_blank(),
@@ -73,6 +75,8 @@ ggplot(df, aes(x = Value, fill = Subpopulation)) +
   theme_dark() +
   labs(title = "Multimodal Data ~ Density with Subgroups", 
        x = "Value", y = "Density") +
+  scale_y_continuous(expand = expansion(mult = c(0, 0))) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0))) +
   theme(legend.position = "top",
         axis.text.y = element_blank(),
         axis.ticks = element_blank(),
