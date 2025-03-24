@@ -172,6 +172,7 @@ label_data <-
   Main_Class = names(main_class_percent),
   Percent = format(round(as.numeric(main_class_percent), 1), nsmall = 1))
 
+# Plot 03 ~ validation
 V %>%
   ggplot(aes(x = y)) +
   geom_density(col = NA, fill = "grey98", adjust = 0.8) +
