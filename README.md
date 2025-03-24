@@ -149,6 +149,6 @@ The *test_wi05* output directory contains the *weighted* as well as the *data* c
 
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_05.png">
 
-A data, for example *df_F.csv* csv file has the following information.
+A data, for example *df_F.csv* csv file has the following information (not all records shown).
 
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_06.png">
