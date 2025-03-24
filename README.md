@@ -157,7 +157,7 @@ Validation by matching assigned (predicted) group labels to original  subgroups
 
 ```r
 # Read data csv files (there are 3 subgroups predicted in all 9 categories)
-FIL <- list.files("D:/MINLAMM/test_wi05", pattern = "^df_", full.names = TRUE) 
+FIL <- list.files(".../test_wi05", pattern = "^df_", full.names = TRUE) 
 
 V <- 
   map_dfr(FIL, ~ read_csv2(.x, show_col_types = FALSE) %>%
