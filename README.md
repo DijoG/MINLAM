@@ -152,3 +152,54 @@ The *test_wi05* output directory contains the *weighted* as well as the *data* c
 A data, for example *df_F.csv* csv file has the following information (not all records shown).
 
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_06.png">
+
+Validation by matching assigned (predicted) group labels to original  subgroups
+
+```r
+# Read data csv files (there are 3 subgroups predicted in all 9 categories)
+FIL <- list.files("D:/MINLAMM/test_wi05", pattern = "^df_", full.names = TRUE) 
+
+V <- 
+  map_dfr(FIL, ~ read_csv2(.x, show_col_types = FALSE) %>%
+    as.data.frame() %>%
+    mutate(Main_Class = factor(as.character(Main_Class))))
+V$Main_Class <- fct_recode(V$Main_Class, "F" = "FALSE")
+
+# Compute MATCHING percentages (each subgroup has 75 records)
+matching_indices <- which(V$Group == V$Assigned_Group)
+main_class_percent <- table(V$Main_Class[matching_indices]) / 75 * 100
+
+# Put percentages into a data frame
+label_data <- 
+  data.frame(
+  Main_Class = names(main_class_percent),
+  Percent = format(round(as.numeric(main_class_percent), 1), nsmall = 1))
+
+V %>%
+  ggplot(aes(x = y)) +
+  geom_density(col = NA, fill = "grey98", adjust = 0.8) +
+  geom_jitter(aes(y = 0.05, color = factor(Assigned_Group)), height = 0.05, 
+              size = 2, shape = 16, alpha = .5) + 
+  scale_color_manual(values = c("firebrick2", "forestgreen", "cyan3"), 
+                     name = "Assigned Groups") +  
+  theme_dark() +
+  labs(title = "Multimodal Data ~ Validation", 
+       x = "Value", y = "Density") +
+  scale_y_continuous(expand = expansion(mult = c(0, 0))) +
+  scale_x_continuous(expand = expansion(mult = c(0, 0))) +
+  facet_wrap(~ Main_Class, ncol = 3) +  
+  geom_text(data = label_data, aes(x = Inf, y = Inf, 
+                                   label = str_c(Percent, "%")), 
+            hjust = 1.2, vjust = 1.2, size = 5, fontface = "bold", 
+            inherit.aes = FALSE, col = "grey15") +  
+  theme(legend.position = "top",
+        legend.key = element_rect(fill = "transparent", color = NA),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        plot.title = element_text(hjust = .5)) +
+  guides(color = guide_legend(override.aes = list(alpha = .7)))
+```
+<img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_07.png">
+
+
