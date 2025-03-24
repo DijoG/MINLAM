@@ -86,7 +86,7 @@ ggplot(df, aes(x = Value, fill = Subpopulation)) +
 # Check available cores and wrangle data accordingly
 parallelly::availableCores() 
 
-cores <- parallelly::availableCores() - 3   # cores = 3
+cores <- parallelly::availableCores() - 1   # cores = 3
 
 num_classes <- length(unique(df$Category))
 num_groups <- ceiling(num_classes / cores)
