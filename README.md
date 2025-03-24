@@ -1,5 +1,5 @@
-The **MINLAM** package provides the *fuss_PARALLEL()* function to address Bayesian probabilty estimation for categorical multimodal 
-data depending on a prior density estimation. Main functionality of **MINLAM** is to provide subpopulation detection and data probabilty
+The **MINLAM** package provides the *fuss_PARALLEL()* function to address Bayesian probability estimation for categorical multimodal 
+data depending on a prior density estimation and an assumed minimum tri-modality. Main functionality of **MINLAM** is to provide subpopulation detection and data probability
 belonging to these subpopulations. It is based on the Metrolpolitan-Hastings sampling written by Virgilio Gómez-Rubio for internal integration 
 within the **INLA** package.
 
@@ -53,7 +53,7 @@ df <- data.frame(Category = categories, Subpopulation = subpopulations, Value = 
 # Plot 01 ~ subpopulations/subgroups not shown
 ggplot(df, aes(x = Value)) +
   geom_density(alpha = 0.7, color = NA, fill = "grey98", adjust = .8) +
-  facet_wrap(~Category, scales = "free_y") +
+  facet_wrap(~Category) +
   theme_dark() +
   labs(title = "Multimodal Data ~ Density", 
        x = "Value", y = "Density") +
@@ -71,7 +71,7 @@ ggplot(df, aes(x = Value)) +
 # Plot 02 ~ subgroups shown
 ggplot(df, aes(x = Value, fill = Subpopulation)) +
   geom_density(alpha = 0.7, color = NA) +
-  facet_wrap(~Category, scales = "free_y") +
+  facet_wrap(~Category) +
   theme_dark() +
   labs(title = "Multimodal Data ~ Density with Subgroups", 
        x = "Value", y = "Density") +
@@ -202,4 +202,4 @@ V %>%
 ```
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_07.png">
 
-
+Not bad at all!:)
