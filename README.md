@@ -49,7 +49,7 @@ df <- data.frame(Category = categories, Subpopulation = subpopulations, Value = 
 
 # Plot 01 ~ subpopulations/subgroups not shown
 ggplot(df, aes(x = Value)) +
-  geom_density(alpha = 0.7, color = NA, fill = "grey98", adjust = .8) +
+  geom_density(color = NA, fill = "grey98", adjust = .8) +
   facet_wrap(~Category) +
   theme_dark() +
   labs(title = "Multimodal Data ~ Density", 
@@ -67,7 +67,7 @@ ggplot(df, aes(x = Value)) +
 ```r
 # Plot 02 ~ subgroups shown
 ggplot(df, aes(x = Value, fill = Subpopulation)) +
-  geom_density(alpha = 0.7, color = NA) +
+  geom_density(alpha = 0.5, color = NA) +
   scale_fill_manual(values = c("firebrick2", "forestgreen", "cyan3"), 
                      name = "Subgroups") +
   facet_wrap(~Category) +
@@ -77,10 +77,12 @@ ggplot(df, aes(x = Value, fill = Subpopulation)) +
   scale_y_continuous(expand = expansion(mult = c(0, 0))) +
   scale_x_continuous(expand = expansion(mult = c(0, 0))) +
   theme(legend.position = "top",
+        legend.key = element_rect(fill = "transparent", color = NA),
         axis.text.y = element_blank(),
         axis.ticks = element_blank(),
         panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-        plot.title = element_text(hjust = .5))
+        plot.title = element_text(hjust = .5)) +
+  guides(fill = guide_legend(override.aes = list(alpha = .6)))
 ```
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_02.png">
 
