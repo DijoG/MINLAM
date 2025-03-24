@@ -68,6 +68,8 @@ ggplot(df, aes(x = Value)) +
 # Plot 02 ~ subgroups shown
 ggplot(df, aes(x = Value, fill = Subpopulation)) +
   geom_density(alpha = 0.7, color = NA) +
+  scale_fill_manual(values = c("firebrick2", "forestgreen", "cyan3"), 
+                     name = "Subgroups") +
   facet_wrap(~Category) +
   theme_dark() +
   labs(title = "Multimodal Data ~ Density with Subgroups", 
