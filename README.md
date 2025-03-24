@@ -1,7 +1,4 @@
-The **MINLAM** package provides the *fuss_PARALLEL()* function to address Bayesian probability estimation for categorical multimodal 
-data depending on a prior density estimation and an assumed minimum tri-modality. Main functionality of **MINLAM** is to provide subpopulation detection and data probability
-belonging to these subpopulations. It is based on the Metrolpolitan-Hastings sampling written by Virgilio Gómez-Rubio for internal integration 
-within the **INLA** package.
+The **MINLAM** package provides the *fuss_PARALLEL()* function to address Bayesian probability estimation for categorical multimodal data depending on a prior density estimation and an assumed minimum tri-modality. Main functionality of **MINLAM** is to provide subpopulation detection and data probability assignment to these subpopulations. The core of **MINLAM** is the Metrolpolitan-Hastings sampling algorithm, written by Virgilio Gómez-Rubio, which is built upon the **INLA** (intergated nested Laplace approximation) package.
 
 ### Useful Links
 Mixture models by Virgilio Gómez-Rubio: 
