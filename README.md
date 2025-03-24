@@ -11,7 +11,7 @@ INLA homepage:
 https://www.r-inla.org/
 
 ### Dependencies
-INLA, tidyverse, multimode
+INLA, tidyverse, multimode, furrr
 
 ### Installation
 
