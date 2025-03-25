@@ -361,19 +361,14 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     n_grp = nrow(formodf)
     
     # Group nearby modes
-    #formonearby = 
-    #  formodf %>%
-    #  dplyr::select(Group, Est_Mode) %>%
-    #  dplyr::inner_join(dplyr::select(formodf, Group2 = Group, Est_Mode2 = Est_Mode), by = character()) %>%
-    #  dplyr::filter(Group != Group2, abs(Est_Mode - Est_Mode2) <= within)
-    #if (nrow(formonearby) > 0) {
-    #  formodf = group_MODES(formodf, within)
-    #  n_grp = nrow(formodf)
-    #}
-    # Group nearby modes
-    if (any(abs(outer(formodf$Est_Mode, formodf$Est_Mode, "-")) <= within, na.rm = TRUE)) {
-      formodf <- group_MODES(formodf, within)
-      n_grp <- nrow(formodf)
+    formonearby = 
+      formodf %>%
+      dplyr::select(Group, Est_Mode) %>%
+      dplyr::inner_join(dplyr::select(formodf, Group2 = Group, Est_Mode2 = Est_Mode), by = character()) %>%
+      dplyr::filter(Group != Group2, abs(Est_Mode - Est_Mode2) <= within)
+    if (nrow(formonearby) > 0) {
+      formodf = group_MODES(formodf, within)
+      n_grp = nrow(formodf)
     }
     
     # Obtain grp while updating groups
@@ -402,8 +397,8 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     #          grp[grp == 0] = 1
     #        }
     #        if (min(grp) == -1 & !0 %in% grp) {
-     #         grp[grp == -1] = 1
-     #       }
+    #          grp[grp == -1] = 1
+    #        }
     #        if (min(grp) == -1 & 0 %in% grp) {
     #          grp[grp == 0] = 2
     #          grp[grp == -1] = 1
@@ -435,26 +430,44 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     #  }
     #}
     
-    # Define groups
-    grp = if (n_grp == 1) rep(1, length(y)) else as.numeric(cut(y, breaks = sort((formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2), labels = FALSE))
-    
-    # Handle missing groups
-    if (!all(seq_len(n_grp) %in% unique(grp))) {
-      missing = setdiff(seq_len(n_grp), unique(grp))
-      formodf = formodf[-missing, ]
-      grp[grp %in% missing] = formodf$Group[which.min(abs(formodf$Est_Mode - y[grp %in% missing]))]
-      n_grp = nrow(formodf)
+    # Obtain grp while updating groups
+    if (n_grp == 1) {
+      grp = rep(1, length(y))
+    } else {
+      # Compute breakpoints for mode separation
+      breaks = sort((formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2)
+      grp = as.numeric(cut(y, breaks = c(-Inf, breaks, Inf)))  
+      
+      # Ensure expected groups exist
+      expected = seq_len(n_grp)
+      present = unique(grp)
+      missing = setdiff(expected, present)
+      
+      if (length(missing) > 0) {
+        grp = grp - length(missing)
+        grp[grp < 1] = 1
+        formodf = formodf[-missing, , drop = FALSE]
+        formodf$Group <- seq_len(nrow(formodf))  
+        n_grp = nrow(formodf)
+      }
+      
+      # Adjust groups with single observations
+      tab = table(grp)
+      singletons = as.numeric(names(tab)[tab == 1])
+      
+      if (length(singletons) > 0) {
+        yvals = y[grp %in% singletons]
+        closest_mode = vapply(yvals, function(v) which.min(abs(formodf$Est_Mode - v)), integer(1))
+        grp[grp %in% singletons] = formodf$Group[closest_mode]
+        n_grp = length(unique(grp))
+      }
+      
+      # Ensure group labels are contiguous
+      ugrp = sort(unique(grp))
+      if (!all(diff(ugrp) == 1)) {
+        grp = match(grp, ugrp)  # Faster remapping of group labels
+      }
     }
-    
-    # Reassign groups
-    tab = table(grp)
-    if (any(tab == 1)) {
-      singletons = as.integer(names(tab[tab == 1]))
-      grp[grp %in% singletons] = formodf$Group[which.min(abs(formodf$Est_Mode - y[grp %in% singletons]))]
-    }
-    
-    # Normalize group numbering
-    grp = match(grp, sort(unique(grp)))
     
     # Parameters
     prior_means = setNames(as.list(formodf$Est_Mode), stringr::str_c("x", seq_len(nrow(formodf))))
