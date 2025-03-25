@@ -368,6 +368,13 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     # multimode::locmodes()
     formodf = get_MODES(y, n_grp) 
     
+    if (any(is.na(formodf$Est_Mode))) {
+      formodf =
+        formodf %>%
+        drop_na()
+      formodf$Group = 1:nrow(formodf)
+    } 
+    
     # Group nearby modes
     formonearby = 
       formodf %>%
