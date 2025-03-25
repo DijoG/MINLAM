@@ -361,74 +361,14 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     n_grp = nrow(formodf)
     
     # Group nearby modes
-    formonearby = 
-      formodf %>%
+    formonearby = formodf %>%
       dplyr::select(Group, Est_Mode) %>%
-      dplyr::inner_join(dplyr::select(formodf, Group2 = Group, Est_Mode2 = Est_Mode), by = character()) %>%
+      tidyr::crossing(dplyr::select(formodf, Group2 = Group, Est_Mode2 = Est_Mode)) %>%
       dplyr::filter(Group != Group2, abs(Est_Mode - Est_Mode2) <= within)
     if (nrow(formonearby) > 0) {
       formodf = group_MODES(formodf, within)
       n_grp = nrow(formodf)
     }
-    
-    # Obtain grp while updating groups
-    #if (n_grp == 1) {grp = rep(1, length(y))}
-    
-    #if (n_grp > 1) {
-    #  breaks = sort((formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2)
-    #  grp = as.numeric(cut(y, n_grp), breaks)
-      
-    #  ## 1)
-    #  expected = 1:n_grp
-    #  if (!all(expected %in% unique(grp))) {
-    #    missing = setdiff(expected, unique(grp))
-    #    min_missing = length(missing)
-    #    if (min_missing == 1) {
-    #      grp = grp - min_missing
-    #      grp[grp == 0] = 1
-    #      formodf = formodf[-missing,]
-    #      formodf$Group = sort(unique(grp))
-    #      n_grp = nrow(formodf)
-    #    }
-    #    if (min_missing > 1) {
-    #      if (min_missing == 2) {
-    #        grp = grp - min_missing
-    #        if (min(grp) == 0) {
-    #          grp[grp == 0] = 1
-    #        }
-    #        if (min(grp) == -1 & !0 %in% grp) {
-    #          grp[grp == -1] = 1
-    #        }
-    #        if (min(grp) == -1 & 0 %in% grp) {
-    #          grp[grp == 0] = 2
-    #          grp[grp == -1] = 1
-    #        }
-    #        n_grp = length(unique(grp))
-    #      } else {
-    #        n_grp = length(unique(grp))
-    #        formodf = get_MODES(y, n_grp) %>%
-    #          dplyr::arrange(Est_Mode)
-    #        breaks = sort((formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2)
-    #        grp = as.numeric(cut(y, n_grp), breaks)
-    #      }
-    #    }
-    #  }
-    #  ## 2)
-    #  tab = as.data.frame(table(grp))
-    #  if (any(tab$Freq == 1)) {
-    #    wone = as.numeric(tab$grp)[tab$Freq == 1]
-    #    yval = y[which(grp == wone)]
-    #    formodf = formodf[-wone, ]
-    #    grp[y == yval] = formodf$Group[which.min(abs(formodf$Est_Mode - yval))]
-     #   n_grp = nrow(formodf)
-    #  }
-    #  ## 3)
-    #  ugrp = sort(unique(grp))  
-    #  if (!all(diff(ugrp) == 1)) {
-    #    newugrp = setNames(seq_along(ugrp), ugrp)
-    #    grp = as.integer(newugrp[as.character(grp)])
-    #  }
-    #}
     
     # Obtain grp while updating groups
     if (n_grp == 1) {
@@ -465,7 +405,7 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
       # Ensure group labels are contiguous
       ugrp = sort(unique(grp))
       if (!all(diff(ugrp) == 1)) {
-        grp = match(grp, ugrp)  # Faster remapping of group labels
+        grp = match(grp, ugrp)  
       }
     }
     
