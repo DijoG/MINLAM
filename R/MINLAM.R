@@ -373,6 +373,7 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
         formodf %>%
         drop_na()
       formodf$Group = 1:nrow(formodf)
+      n_grp = nrow(formodf)
     } 
     
     # Group nearby modes
