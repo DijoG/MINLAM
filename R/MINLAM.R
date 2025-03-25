@@ -348,104 +348,115 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     
     # Data preparation 
     #y = data[data[[varCLASS]] == mclass[i], varY]
-    y = data %>%
-      dplyr::filter(.data[[varCLASS]] == mclass[i]) %>%
-      dplyr::pull(.data[[varY]])
-    df_grp = get_NGRP(y)
+    y = data %>% dplyr::filter(.data[[varCLASS]] == mclass[i]) %>% dplyr::pull(.data[[varY]])
     
     ##> Number of groups (subgroups/-populations in a multimodal distribution)
     # Initial groups 
-    #n_grp <- df_grp[df_grp$Method == method, "n_grp"]
-    n_grp = 
-      df_grp %>%
-      dplyr::filter(Method == method) %>%
-      dplyr::pull(n_grp)
+    n_grp = get_NGRP(y) %>% dplyr::filter(Method == method) %>% dplyr::pull(n_grp)
+    n_grp = min(max(n_grp, 3), maxNGROUP)
     
-    if (n_grp < 3) {n_grp = 3}
-    
-    if (n_grp > maxNGROUP) {n_grp = maxNGROUP}
-    
-    # multimode::locmodes()
-    formodf = get_MODES(y, n_grp) 
-    
-    if (any(is.na(formodf$Est_Mode))) {
-      formodf =
-        formodf %>%
-        drop_na()
-      formodf$Group = 1:nrow(formodf)
-      n_grp = nrow(formodf)
-    } 
+    # Get modes
+    formodf = get_MODES(y, n_grp) %>% tidyr::drop_na()
+    formodf$Group = seq_len(nrow(formodf))
+    n_grp = nrow(formodf)
     
     # Group nearby modes
-    formonearby = 
-      formodf %>%
-      dplyr::select(Group, Est_Mode) %>%
-      dplyr::inner_join(dplyr::select(formodf, Group2 = Group, Est_Mode2 = Est_Mode), by = character()) %>%
-      dplyr::filter(Group != Group2, abs(Est_Mode - Est_Mode2) <= within)
-    if (nrow(formonearby) > 0) {
-      formodf = group_MODES(formodf, within)
+    #formonearby = 
+    #  formodf %>%
+    #  dplyr::select(Group, Est_Mode) %>%
+    #  dplyr::inner_join(dplyr::select(formodf, Group2 = Group, Est_Mode2 = Est_Mode), by = character()) %>%
+    #  dplyr::filter(Group != Group2, abs(Est_Mode - Est_Mode2) <= within)
+    #if (nrow(formonearby) > 0) {
+    #  formodf = group_MODES(formodf, within)
+    #  n_grp = nrow(formodf)
+    #}
+    # Group nearby modes
+    if (any(abs(outer(formodf$Est_Mode, formodf$Est_Mode, "-")) <= within, na.rm = TRUE)) {
+      formodf <- group_MODES(formodf, within)
+      n_grp <- nrow(formodf)
+    }
+    
+    # Obtain grp while updating groups
+    #if (n_grp == 1) {grp = rep(1, length(y))}
+    
+    #if (n_grp > 1) {
+    #  breaks = sort((formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2)
+    #  grp = as.numeric(cut(y, n_grp), breaks)
+      
+    #  ## 1)
+    #  expected = 1:n_grp
+    #  if (!all(expected %in% unique(grp))) {
+    #    missing = setdiff(expected, unique(grp))
+    #    min_missing = length(missing)
+    #    if (min_missing == 1) {
+    #      grp = grp - min_missing
+    #      grp[grp == 0] = 1
+    #      formodf = formodf[-missing,]
+    #      formodf$Group = sort(unique(grp))
+    #      n_grp = nrow(formodf)
+    #    }
+    #    if (min_missing > 1) {
+    #      if (min_missing == 2) {
+    #        grp = grp - min_missing
+    #        if (min(grp) == 0) {
+    #          grp[grp == 0] = 1
+    #        }
+    #        if (min(grp) == -1 & !0 %in% grp) {
+     #         grp[grp == -1] = 1
+     #       }
+    #        if (min(grp) == -1 & 0 %in% grp) {
+    #          grp[grp == 0] = 2
+    #          grp[grp == -1] = 1
+    #        }
+    #        n_grp = length(unique(grp))
+    #      } else {
+    #        n_grp = length(unique(grp))
+    #        formodf = get_MODES(y, n_grp) %>%
+    #          dplyr::arrange(Est_Mode)
+    #        breaks = sort((formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2)
+    #        grp = as.numeric(cut(y, n_grp), breaks)
+    #      }
+    #    }
+    #  }
+    #  ## 2)
+    #  tab = as.data.frame(table(grp))
+    #  if (any(tab$Freq == 1)) {
+    #    wone = as.numeric(tab$grp)[tab$Freq == 1]
+    #    yval = y[which(grp == wone)]
+    #    formodf = formodf[-wone, ]
+    #    grp[y == yval] = formodf$Group[which.min(abs(formodf$Est_Mode - yval))]
+     #   n_grp = nrow(formodf)
+    #  }
+    #  ## 3)
+    #  ugrp = sort(unique(grp))  
+    #  if (!all(diff(ugrp) == 1)) {
+    #    newugrp = setNames(seq_along(ugrp), ugrp)
+    #    grp = as.integer(newugrp[as.character(grp)])
+    #  }
+    #}
+    
+    # Define groups
+    grp = if (n_grp == 1) rep(1, length(y)) else as.numeric(cut(y, breaks = sort((formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2), labels = FALSE))
+    
+    # Handle missing groups
+    if (!all(seq_len(n_grp) %in% unique(grp))) {
+      missing = setdiff(seq_len(n_grp), unique(grp))
+      formodf = formodf[-missing, ]
+      grp[grp %in% missing] = formodf$Group[which.min(abs(formodf$Est_Mode - y[grp %in% missing]))]
       n_grp = nrow(formodf)
     }
     
-    # Obtain grp while udating groups
-    if (n_grp == 1) {grp = rep(1, length(y))}
-    
-    if (n_grp > 1) {
-      breaks = sort((formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2)
-      grp = as.numeric(cut(y, n_grp), breaks)
-      
-      ## 1)
-      expected = 1:n_grp
-      if (!all(expected %in% unique(grp))) {
-        missing = setdiff(expected, unique(grp))
-        min_missing = length(missing)
-        if (min_missing == 1) {
-          grp = grp - min_missing
-          grp[grp == 0] = 1
-          formodf = formodf[-missing,]
-          formodf$Group = sort(unique(grp))
-          n_grp = nrow(formodf)
-        }
-        if (min_missing > 1) {
-          if (min_missing == 2) {
-            grp = grp - min_missing
-            if (min(grp) == 0) {
-              grp[grp == 0] = 1
-            }
-            if (min(grp) == -1 & !0 %in% grp) {
-              grp[grp == -1] = 1
-            }
-            if (min(grp) == -1 & 0 %in% grp) {
-              grp[grp == 0] = 2
-              grp[grp == -1] = 1
-            }
-            n_grp = length(unique(grp))
-          } else {
-            n_grp = length(unique(grp))
-            formodf = get_MODES(y, n_grp) %>%
-              dplyr::arrange(Est_Mode)
-            breaks = sort((formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2)
-            grp = as.numeric(cut(y, n_grp), breaks)
-          }
-        }
-      }
-      ## 2)
-      tab = as.data.frame(table(grp))
-      if (any(tab$Freq == 1)) {
-        wone = as.numeric(tab$grp)[tab$Freq == 1]
-        yval = y[which(grp == wone)]
-        formodf = formodf[-wone, ]
-        grp[y == yval] = formodf$Group[which.min(abs(formodf$Est_Mode - yval))]
-        n_grp = nrow(formodf)
-      }
-      ## 3)
-      ugrp = sort(unique(grp))  
-      if (!all(diff(ugrp) == 1)) {
-        newugrp = setNames(seq_along(ugrp), ugrp)
-        grp = as.integer(newugrp[as.character(grp)])
-      }
+    # Reassign groups
+    tab = table(grp)
+    if (any(tab == 1)) {
+      singletons = as.integer(names(tab[tab == 1]))
+      grp[grp %in% singletons] = formodf$Group[which.min(abs(formodf$Est_Mode - y[grp %in% singletons]))]
     }
     
+    # Normalize group numbering
+    grp = match(grp, sort(unique(grp)))
+    
+    # Parameters
     prior_means = setNames(as.list(formodf$Est_Mode), stringr::str_c("x", seq_len(nrow(formodf))))
     grp_init = list(z = grp, m = fit_inla_internal(y, grp, prior_means))
     
