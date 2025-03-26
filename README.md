@@ -120,7 +120,7 @@ MINLAM::fuss_PARALLEL(data = df_GROUPS,
                       n_workers = cores)
 tictoc::toc()
 ```
-57 minutes processing time using 3 cores.
+51 minutes processing time using 3 cores.
 The *test_wi1* output directory contains the *weighted* csv files.
 
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_03.png">
@@ -145,7 +145,7 @@ MINLAM::fuss_PARALLEL(data = df_GROUPS,
                       n_workers = cores)
 tictoc::toc()
 ```
-59 minutes processing time using 3 cores.
+53 minutes processing time using 3 cores.
 The *test_wi05* output directory contains the *weighted* as well as the *data* csv files.
 
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_05.png">
