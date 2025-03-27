@@ -343,7 +343,7 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
   mclass = unique(as.character(data[[varCLASS]]))
   
   ##> start loop
-  OUT = list()
+  OUT = vector("list", length(mclass))
   for (i in seq_along(mclass)) {
     
     # Data preparation 
@@ -352,8 +352,7 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     
     ##> Number of groups (subgroups/-populations in a multimodal distribution)
     # Initial groups 
-    n_grp = get_NGRP(y) %>% dplyr::filter(Method == method) %>% dplyr::pull(n_grp)
-    n_grp = min(max(n_grp, 3), maxNGROUP)
+    n_grp = min(max(get_NGRP(y)[Method == method, "n_grp"], 3), maxNGROUP)
     
     # Get modes
     formodf = get_MODES(y, n_grp) %>% tidyr::drop_na()
@@ -370,69 +369,55 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
       n_grp = nrow(formodf)
     }
     
-    #####> Obtain grp while updating groups
-    if (n_grp == 1) {grp = rep(1, length(y))}
-    
-    if (n_grp > 1) {
-      
-      # Compute breakpoints for subroup separation
-      breaks = sort((formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2)
-      grp = as.numeric(cut(y, n_grp), breaks)
+    ##> Obtain grp while updating groups
+    if (n_grp == 1) {
+      grp = rep(1, length(y))
+    } else {
+      # Compute breakpoints for subgroup separation
+      breaks = (formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2
+      grp = findInterval(y, vec = breaks) + 1  # Efficient alternative to cut()
       
       # Ensure expected groups exist
-      expected = 1:n_grp
+      expected = seq_len(n_grp)
       present = unique(grp)
       
       if (!all(expected %in% present)) {
         missing = setdiff(expected, present)
         min_missing = length(missing)
+        
         if (min_missing == 1) {
-          grp = grp - min_missing
-          grp[grp == 0] = 1
-          formodf = formodf[-missing,]
+          grp[grp == min(missing)] <- 1  
+          formodf = formodf[-missing, ]
           formodf$Group = sort(present)
           n_grp = nrow(formodf)
-        }
-        if (min_missing > 1) {
-          if (min_missing == 2) {
-            grp = grp - min_missing
-            if (min(grp) == 0) {
-              grp[grp == 0] = 1
-            }
-            if (min(grp) == -1 & !0 %in% grp) {
-              grp[grp == -1] = 1
-            }
-            if (min(grp) == -1 & 0 %in% grp) {
-              grp[grp == 0] = 2
-              grp[grp == -1] = 1
-            }
-            n_grp = length(present)
-          } else {
-            n_grp = length(present)
-            formodf = get_MODES(multimode::modeforest(y, display = F), n_grp) %>%
-              arrange(Est_Mode)
-            breaks = sort((formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2)
-            grp = as.numeric(cut(y, n_grp), breaks)
-          }
+          
+        } else if (min_missing >= 2) {
+          formodf = get_MODES(multimode::modeforest(y, display = FALSE), length(present)) %>%
+            arrange(Est_Mode)
+          breaks = (formodf$Est_Mode[-nrow(formodf)] + formodf$Est_Mode[-1]) / 2
+          grp = findInterval(y, vec = breaks) + 1
+          n_grp = length(present)
         }
       }
       
       # Adjust groups with single observations
-      tab = as.data.frame(table(grp))
-      if (any(tab$Freq == 1)) {
-        wone = as.numeric(tab$grp)[tab$Freq == 1]
-        yval = y[which(grp == wone)]
-        formodf = formodf[-wone, ]
-        grp[y == yval] = formodf$Group[which.min(abs(formodf$Est_Mode - yval))]
+      tab = table(grp)
+      single_obs = as.numeric(names(tab[tab == 1]))  # Groups with only one member
+      
+      if (length(single_obs) > 0) {
+        for (wone in single_obs) {
+          yval = y[grp == wone]
+          formodf = formodf[formodf$Group != wone, ]
+          closest_group = formodf$Group[which.min(abs(formodf$Est_Mode - yval))]
+          grp[grp == wone] = closest_group
+        }
         n_grp = nrow(formodf)
       }
       
       # Ensure group labels are contiguous
-      ugrp = sort(unique(grp))  
-      if (!all(diff(ugrp) == 1)) {
-        grp = match(grp, ugrp) 
-      }
-    } 
+      ugrp = sort(unique(grp))
+      grp = match(grp, ugrp)  # Relabel groups in order
+    }
     
     ##> Parameters
     prior_means = setNames(as.list(formodf$Est_Mode), stringr::str_c("x", seq_len(nrow(formodf))))
