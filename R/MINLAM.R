@@ -352,7 +352,8 @@ get_PROBCLASS_MH <- function(data, varCLASS, varY, method = "dpi", within = 0.03
     
     ##> Number of groups (subgroups/-populations in a multimodal distribution)
     # Initial groups 
-    n_grp = min(max(get_NGRP(y)[Method == method, "n_grp"], 3), maxNGROUP)
+    n_grp = get_NGRP(y) %>% dplyr::filter(Method == method) %>% dplyr::pull(n_grp)
+    n_grp = min(max(n_grp, 3), maxNGROUP)
     
     # Get modes
     formodf = get_MODES(y, n_grp) %>% tidyr::drop_na()
