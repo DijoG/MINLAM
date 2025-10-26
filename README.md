@@ -10,17 +10,18 @@ https://rdrr.io/rforge/INLABMA/src/R/INLAMH.R
 INLA homepage: 
 https://www.r-inla.org/
 
-## Dependencies
+### Dependencies
 INLA, tidyverse, multimode, furrr
 
-## Installation
+### Installation
 
 ```r
 devtools::install_github("DijoG/MINLAM")
 ```
-## Example
 
-### Data Creation
+### Example
+
+## Data Creation
 For dummy data creation the **truncnorm** package is needed.
 
 ```r
@@ -88,7 +89,8 @@ ggplot(df, aes(x = Value, fill = Subpopulation)) +
 ```
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_02.png">
 
-### The Essence ~ fuss_PARALLEL()
+
+## The Essence ~ fuss_PARALLEL()
 
 ```r
 # Check available cores and wrangle data accordingly
@@ -158,7 +160,8 @@ A data, for example *df_F.csv* csv file has the following information (not all r
 
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_06.png">
 
-### Validation
+
+## Validation
 
 Validation by matching assigned (predicted) group labels to original subgroup labels.
 
