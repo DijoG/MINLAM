@@ -165,7 +165,7 @@ A data, for example *df_F.csv* csv file has the following information (not all r
 
 ### Validation
 
-Validation by matching assigned (predicted) group labels to original subgroup labels.
+Validation by matching assigned (predicted/assigned) subgroup labels to original subgroup labels.
 
 ```r
 # Read data csv files (there are 3 subgroups predicted in all 9 categories)
