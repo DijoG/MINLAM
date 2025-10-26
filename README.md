@@ -1,6 +1,8 @@
+# MINLAM
+
 The **MINLAM** package provides the *fuss_PARALLEL()* function to address Bayesian probability estimation for categorical multimodal data depending on a prior density estimation and an assumed minimum tri-modality. Main functionality of **MINLAM** is to provide subpopulation detection and data probability assignment to these subpopulations. The core of **MINLAM** is the Metrolpolitan-Hastings sampling algorithm, written by Virgilio Gómez-Rubio, which is built upon the **INLA** (intergated nested Laplace approximation) package.
 
-### Useful Links
+## Useful Links
 Mixture models by Virgilio Gómez-Rubio: 
 https://becarioprecario.bitbucket.io/inla-gitbook/ch-mixture.html
 
@@ -10,18 +12,18 @@ https://rdrr.io/rforge/INLABMA/src/R/INLAMH.R
 INLA homepage: 
 https://www.r-inla.org/
 
-### Dependencies
+## Dependencies
 INLA, tidyverse, multimode, furrr
 
-### Installation
+## Installation
 
 ```r
 devtools::install_github("DijoG/MINLAM")
 ```
 
-### Example
+## Example
 
-## Data Creation
+### Data Creation
 For dummy data creation the **truncnorm** package is needed.
 
 ```r
@@ -90,7 +92,7 @@ ggplot(df, aes(x = Value, fill = Subpopulation)) +
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_02.png">
 
 
-## The Essence ~ fuss_PARALLEL()
+### The Essence ~ fuss_PARALLEL()
 
 ```r
 # Check available cores and wrangle data accordingly
@@ -161,7 +163,7 @@ A data, for example *df_F.csv* csv file has the following information (not all r
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_06.png">
 
 
-## Validation
+### Validation
 
 Validation by matching assigned (predicted) group labels to original subgroup labels.
 
