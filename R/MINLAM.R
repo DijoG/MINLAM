@@ -493,8 +493,7 @@ fuss_PARALLEL <- function(data, varCLASS, varY, method = "dpi", within = 0.03, m
                                                maxNGROUP,
                                                df_prob,
                                                out_dir),
-                      .progress = TRUE,
-                      .options = furrr::furrr_options(seed = TRUE))
+                      .progress = FALSE)
   if (is.null(out_dir)) {
     if (df_prob) {
       df = purrr::map_dfr(result_list, "df")
