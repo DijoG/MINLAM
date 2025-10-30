@@ -146,7 +146,7 @@ MINLAM::fuss_PARALLEL(data = df_GROUPS,
                       within = 1, 
                       maxNGROUP = 5, 
                       df_prob = FALSE, 
-                      out_dir = ".../test_wi1", 
+                      out_dir = ".../test_MINLAM", 
                       n_workers = cores)
 tictoc::toc()
 # Processing time: ~16 minutes (3 cores)
@@ -154,21 +154,15 @@ tictoc::toc()
 ### Output 
 
 The function generates:
-  - **Weighted CSV** files: Probabilty weights for each subpopulation:
-  
-<img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_03.png">
-<img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_04.png">
-
-  - **Data CSV** files: Original data with assigned groups and probabities:
+  - **Weighted CSV** files: Probabilty weights for each subpopulation
+  - **Data CSV** files: Original data with assigned groups and probabities.
   
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_05.png">
-<img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_06.png">
-
 
 ### Validation
 ```r
 # Validate subgroup assignments
-FIL <- list.files(".../test_wi05", pattern = "^df_", full.names = TRUE) 
+FIL <- list.files(".../test_MINLAM", pattern = "^df_", full.names = TRUE) 
 
 predicted <- map_dfr(FIL, ~ read_csv2(.x, show_col_types = FALSE)) %>%
   as.data.frame() %>%
