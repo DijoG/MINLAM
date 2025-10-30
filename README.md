@@ -154,11 +154,16 @@ tictoc::toc()
 ### Output 
 
 The function generates:
-  - **Weighted CSV** files: Probabilty weights for each subpopulation
-  - **Data CSV** files: Original data with assigned groups and probabities.
-
+  - **Weighted CSV** files: Probabilty weights for each subpopulation:
+  
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_03.png">
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_04.png">
+
+  - **Data CSV** files: Original data with assigned groups and probabities:
+  
+<img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_05.png">
+<img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_06.png">
+
 
 ### Validation
 ```r
