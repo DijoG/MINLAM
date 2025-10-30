@@ -1,6 +1,6 @@
 # MINLAM
 
-**MINLAM** is  an R package Bayesian probability estimation in categorical multimodal data. It performs subpopulation detection and probability assignment using Metropolitan-Hastings sampling built upon the `INLA` (Integrated Nested Laplace Approximation) framework.
+**MINLAM** is  an R package for Bayesian probability estimation in categorical multimodal data. It performs subpopulation detection and probability assignment using Metropolitan-Hastings sampling built upon the `INLA` (Integrated Nested Laplace Approximation) framework.
 
 ## Overview
 
