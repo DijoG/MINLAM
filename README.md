@@ -1,33 +1,57 @@
 # MINLAM
 
-The **MINLAM** package provides the *fuss_PARALLEL()* function to address Bayesian probability estimation for categorical multimodal data depending on a prior density estimation and an assumed minimum tri-modality. Main functionality of **MINLAM** is to provide subpopulation detection and data probability assignment to these subpopulations. The core of **MINLAM** is the Metrolpolitan-Hastings sampling algorithm, written by Virgilio Gómez-Rubio, which is built upon the **INLA** (intergated nested Laplace approximation) package.
+**MINLAM** is  an R package Bayesian probability estimation in categorical multimodal data. It performs subpopulation detection and probability assignment using Metropolitan-Hastings sampling built upon the `INLA` (Integrated Nested Laplace Approximation) framework.
 
-## Useful Links
-Mixture models by Virgilio Gómez-Rubio: 
-https://becarioprecario.bitbucket.io/inla-gitbook/ch-mixture.html
+## Overview
 
-Source code for the Metropolitan-Hastings sampling:
-https://rdrr.io/rforge/INLABMA/src/R/INLAMH.R
+The package's core function `fuss_PARALLEL()`:
 
-INLA homepage: 
-https://www.r-inla.org/
+  - Uses the Metrolpolitan-Hastings sampling algorithm written by Virgilio Gómez-Rubio
 
-## Dependencies
-INLA, tidyverse, multimode, furrr
+  - Enables Bayesian probability estimation for multimodal categorical data
+
+  - Performs subpopulation detection and classification
+
+  - Supports parallel processing for efficient computation
+
+  - Provides probability assignment to identified subpopulations.
 
 ## Installation
-
 ```r
 devtools::install_github("DijoG/MINLAM")
 ```
+## Dependencies
 
-## Example
+`INLA`, `tidyverse`, `multimode`, `furrr`
 
-### Data Creation
+## Quick Start
+
+### Basic Usage
+```r
+require(MINLAM)
+
+# Prepare data and run analysis
+result <- fuss_PARALLEL(
+  data = df_GROUPS,
+  varCLASS = "Category", 
+  varY = "Value", 
+  method = "dpi", 
+  within = 1, 
+  maxNGROUP = 5, 
+  df_prob = FALSE, 
+  out_dir = ".../output", 
+  n_workers = parallelly::availableCores()
+)
+```
+
+## Detailed Example
+
+### Data Generation
+
 For dummy data creation the **truncnorm** package is needed.
 
 ```r
-require(tidyverse);require(truncnorm)
+library(tidyverse);library(truncnorm)
 
 # Set seed for reproducibility
 set.seed(5)
@@ -51,7 +75,9 @@ values <- c(
 
 # Create data frame
 df <- data.frame(Category = categories, Subpopulation = subpopulations, Value = values)
-
+```
+### Data Visualization
+```r
 # Plot 01 ~ subpopulations/subgroups not shown
 ggplot(df, aes(x = Value)) +
   geom_density(color = NA, fill = "grey98", adjust = .8) +
@@ -92,14 +118,10 @@ ggplot(df, aes(x = Value, fill = Subpopulation)) +
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_02.png">
 
 
-### The Essence ~ fuss_PARALLEL()
-
+### Parallel Processing Setup 
 ```r
-# Check available cores and wrangle data accordingly
-parallelly::availableCores() 
-
+# Configure parallel processing
 cores <- length(unique(df$Subpopulation))   # cores = 3
-
 num_classes <- length(unique(df$Category))
 num_groups <- ceiling(num_classes / cores)
 
@@ -110,12 +132,12 @@ df <-
 df_GROUPS <- 
   df %>%
   group_split(GROUP)
+```
+### Running Analysis
+```r
+library(furrr)
 
-# Run fuss_PARALLEL() with parameters: 'within' = 1 and 'df_prob' = FALSE
-dir.create(".../test_wi1")
-
-require(furrr)
-
+# Analysis with probability output
 tictoc::tic()
 MINLAM::fuss_PARALLEL(data = df_GROUPS,
                       varCLASS = "Category", 
@@ -127,100 +149,81 @@ MINLAM::fuss_PARALLEL(data = df_GROUPS,
                       out_dir = ".../test_wi1", 
                       n_workers = cores)
 tictoc::toc()
+# Processing time: ~16 minutes (3 cores)
 ```
-15 minutes (51 minutes on a very old 8GB RAM machine) processing time using 3 cores.
-The *test_wi1* output directory contains the *weighted* csv files.
+### Output 
+
+The function generates:
+  - **Weighted CSV** files: Probabilty weights for each subpopulation
+  - **Data CSV** files: Original data with assigned groups and probabities.
 
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_03.png">
-
-A weighted, for example *wdf_F.csv* csv file has the following information.
-
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_04.png">
 
-```r
-# Run fuss_PARALLEL() with parameters: 'within' = 0.5 and 'df_prob' = TRUE
-dir.create(".../test_wi05")
-
-tictoc::tic()
-MINLAM::fuss_PARALLEL(data = df_GROUPS,
-                      varCLASS = "Category", 
-                      varY = "Value", 
-                      method = "dpi", 
-                      within = 0.5, 
-                      maxNGROUP = 5, 
-                      df_prob = TRUE, 
-                      out_dir = ".../test_wi05", 
-                      n_workers = cores)
-tictoc::toc()
-```
-16 minutes (53 minutes on a very old 8GB RAM machine) processing time using 3 cores.
-The *test_wi05* output directory contains the *weighted* as well as the *data* csv files.
-
-<img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_05.png">
-
-Data, for example *df_F.csv* csv file consits of the following information (not all records shown).
-
-<img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_06.png">
-
-
 ### Validation
-
-Validation by matching assigned (predicted/assigned) subgroup labels to original subgroup labels.
-
 ```r
-# Read data csv files (there are 3 subgroups predicted in all 9 categories)
+# Validate subgroup assignments
 FIL <- list.files(".../test_wi05", pattern = "^df_", full.names = TRUE) 
 
-# Predicted subgroups
-V <- 
-  map_dfr(FIL, ~ read_csv2(.x, show_col_types = FALSE) %>%
-    as.data.frame() %>%
-    mutate(Main_Class = factor(as.character(Main_Class)))) %>%
-    arrange(y)
-V$Main_Class <- fct_recode(V$Main_Class, "F" = "FALSE")
+predicted <- map_dfr(FIL, ~ read_csv2(.x, show_col_types = FALSE)) %>%
+  as.data.frame() %>%
+  mutate(Main_Class = factor(as.character(Main_Class))) %>%
+  arrange(y)
 
-# Observed subgroups
-df <-
-  df %>%
-  arrange(Value)
+predicted$Main_Class <- fct_recode(predicted$Main_Class, "F" = "FALSE")
+
+# Prepare observed data
+df <- df %>% arrange(Value)
 df$Subpopulation <- as.numeric(str_remove(df$Subpopulation, "Group "))
 
-# Compute MATCHING percentages (each subgroup has 75 records)
-matching_indices <- which(df$Subpopulation == V$Assigned_Group)
-main_class_percent <- table(V$Main_Class[matching_indices]) / 75 * 100
+# Calculate matching accuracy (each subgroup has 75 records)
+matching_indices <- which(df$Subpopulation == predicted$Assigned_Group)
+main_class_percent <- table(predicted$Main_Class[matching_indices]) / 75 * 100
 
-# Put percentages into a data frame
-label_data <- 
-  data.frame(
+label_data <- data.frame(
   Main_Class = names(main_class_percent),
-  Percent = format(round(as.numeric(main_class_percent), 1), nsmall = 1))
+  Percent = format(round(as.numeric(main_class_percent), 1), nsmall = 1)
+)
 
-# Plot 03 ~ validation
-V %>%
-  ggplot(aes(x = y)) +
+# Plot 03 - validation
+ggplot(predicted, aes(x = y)) +
   geom_density(col = NA, fill = "grey98", adjust = 0.8) +
-  geom_jitter(aes(y = 0.05, color = factor(Assigned_Group)), height = 0.05, 
-              size = 2, shape = 16, alpha = .5) + 
+  geom_jitter(aes(y = 0.05, color = factor(Assigned_Group)), 
+              height = 0.05, size = 2, shape = 16, alpha = .5) + 
   scale_color_manual(values = c("firebrick2", "forestgreen", "cyan3"), 
                      name = "Assigned Groups") +  
   theme_dark() +
-  labs(title = "Multimodal Data ~ Validation", 
+  labs(title = "Validation of Subgroup Assignments", 
        x = "Value", y = "Density") +
   scale_y_continuous(expand = expansion(mult = c(0, 0))) +
   scale_x_continuous(expand = expansion(mult = c(0, 0))) +
   facet_wrap(~ Main_Class, ncol = 3) +  
   geom_text(data = label_data, aes(x = Inf, y = Inf, 
-                                   label = str_c(Percent, "%")), 
+            label = paste0(Percent, "%")), 
             hjust = 1.2, vjust = 1.2, size = 5, fontface = "bold", 
             inherit.aes = FALSE, col = "grey15") +  
   theme(legend.position = "top",
         legend.key = element_rect(fill = "transparent", color = NA),
         axis.text.y = element_blank(),
         axis.ticks = element_blank(),
-        panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
         plot.title = element_text(hjust = .5)) +
   guides(color = guide_legend(override.aes = list(alpha = .7)))
 ```
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_07.png">
 
-Not bad at all!:)
+**Validation results show accurate subgroup assignment across categories.**
+
+## Useful Links
+
+  - Mixture models by Virgilio Gómez-Rubio: 
+    https://becarioprecario.bitbucket.io/inla-gitbook/ch-mixture.html
+
+  - Algorithm for the Metropolitan-Hastings sampling:
+    https://rdrr.io/rforge/INLABMA/src/R/INLAMH.R
+
+  - INLA homepage: 
+    https://www.r-inla.org/
+
+
