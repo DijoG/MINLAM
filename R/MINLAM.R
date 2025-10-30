@@ -18,7 +18,7 @@ check_PACKS <- function() {
 #' Extract mode statistics from a mode forest
 #'
 #' @param y vector, input data of a distribution
-#' @param nmod numeric, number of subpopulations/subgroups  
+#' @param nmod numeric, count/number of subpopulations/subgroups  
 #' @return data frame 
 #' @export
 get_MODES <- function(y, nmod) {

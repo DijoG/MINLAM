@@ -9,7 +9,7 @@ get_MODES(y, nmod)
 \arguments{
 \item{y}{vector, input data of a distribution}
 
-\item{nmod}{numeric, number of subpopulations/subgroups}
+\item{nmod}{numeric, count/number of subpopulations/subgroups}
 }
 \value{
 data frame
