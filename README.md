@@ -1,32 +1,4 @@
-# MINLAM
-
-<div align="right">
-  <svg width="150" height="80" xmlns="http://www.w3.org/2000/svg">
-    <!-- Plot area -->
-    <g transform="translate(20, 10)">
-      <!-- X-axis -->
-      <line x1="0" y1="50" x2="100" y2="50" stroke="grey" stroke-width="1"/>
-      <!-- Y-axis -->
-      <line x1="50" y1="0" x2="50" y2="50" stroke="grey" stroke-width="1"/>
-      
-      <!-- Normal distribution curve -->
-      <path d="M 0 50 
-               C 10 45 20 30 30 20
-               S 45 5 50 0
-               S 55 5 70 20
-               S 90 45 100 50" 
-            fill="none" stroke="#e41a1c" stroke-width="2"/>
-      
-      <!-- Mean line -->
-      <line x1="50" y1="0" x2="50" y2="50" stroke="grey" stroke-width="1" stroke-dasharray="4"/>
-      
-      <!-- Points highlighting the multi-modal aspect -->
-      <circle cx="30" cy="20" r="3" fill="#377eb8"/>
-      <circle cx="50" cy="0" r="3" fill="#4daf4a"/>
-      <circle cx="70" cy="20" r="3" fill="#984ea3"/>
-    </g>
-  </svg>
-</div>
+# MINLAM <img src="https://latex.codecogs.com/svg.latex?\mathcal{N}(\mu,\sigma^2)" title="Normal Distribution" align="right" height="40">
 
 **MINLAM** is an R package for Bayesian probability estimation in categorical multimodal data. It performs subpopulation detection and probability assignment using Metropolitan-Hastings sampling built upon the `INLA` (Integrated Nested Laplace Approximation) framework.
 
