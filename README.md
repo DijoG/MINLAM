@@ -159,6 +159,19 @@ The function generates:
   
 <img align="bottom" src="https://raw.githubusercontent.com/DijoG/storage/main/README/MM_05.png">
 
+A **Data CSV** file consists of the following fields:
+  - `y` Original/obserevd value
+  - `Group` Original/observed subgroup
+  - `Group_1` Belonging probability 
+  - `Group_2` Belonging probability
+  - `Group_3` Belonging probability
+  - `Assigned_Group` Assigned/predicted subgroup
+  - `Min_Assigned` Minimum value of the assigned range
+  - `Max_Assigned` Maximum value of the assigned range
+  - `Mean_Assigned` Mean value of the assigned range
+  - `Mode_Assigned` Mode of the assigned range
+  - `Main_Class` Category/class 
+
 ### Validation
 ```r
 # Validate subgroup assignments
