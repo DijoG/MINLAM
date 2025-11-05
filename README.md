@@ -1,4 +1,4 @@
-# MINLAM 
+# MINLAM 🏔️
 
 <img src="https://latex.codecogs.com/svg.latex?\mathcal{N}(\mu,\sigma^2)" title="Normal Distribution" align="right" height="40">
 
