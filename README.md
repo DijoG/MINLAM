@@ -240,4 +240,4 @@ ggplot(predicted, aes(x = y)) +
   - INLA homepage: 
     https://www.r-inla.org/
 
-
+Happy multimoda(e)ling! 🏔️
