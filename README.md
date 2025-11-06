@@ -196,7 +196,9 @@ label_data <- data.frame(
   Main_Class = names(main_class_percent),
   Percent = format(round(as.numeric(main_class_percent), 1), nsmall = 1)
 )
-
+```
+### Validation Visualization
+```r
 # Plot 03 - validation
 ggplot(predicted, aes(x = y)) +
   geom_density(col = NA, fill = "grey98", adjust = 0.8) +
