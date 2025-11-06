@@ -1,6 +1,4 @@
-# MINLAM 🏔️
-
-<img src="https://latex.codecogs.com/svg.latex?\mathcal{N}(\mu,\sigma^2)" title="Normal Distribution" align="right" height="40">
+# MINLAM 🏔️ <img src="https://latex.codecogs.com/svg.latex?\color{green}\mathcal{N}(\mu,\sigma^2)" height="30" align="center">
 
 **MINLAM** is an R package for Bayesian probability estimation in categorical multimodal data. It performs subpopulation detection and probability assignment using Metropolitan-Hastings sampling built upon the `INLA` (Integrated Nested Laplace Approximation) framework.
 
